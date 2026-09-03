@@ -5,6 +5,8 @@ submission and approval, automatic foreign-currency conversion at the rate most
 favorable to the volunteer, check-register management, bank reconciliation, and
 one-click generation of the official documents the parent organization requires.
 
+This case study demonstrates the same architectural claim as my research: that obligations enforced in the data model survive where procedural controls fail.
+
 **Pilot:** an overseas volunteer committee (7 troops, ~10 adult users) running a
 full fiscal year on the system. **Stack:** Next.js (App Router), TypeScript
 strict, Supabase (PostgreSQL + RLS + Storage), Vercel, Vitest + Playwright.
