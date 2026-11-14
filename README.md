@@ -1,79 +1,47 @@
-# Treasury Platform — Case Study
+# Treasury Workflows — Architecture Case Study
 
-A multi-tenant treasury platform for volunteer-run organizations: reimbursement
-submission and approval, automatic foreign-currency conversion at the rate most
-favorable to the volunteer, check-register management, bank reconciliation, and
-one-click generation of the official documents the parent organization requires.
+Requirements and architecture for volunteer treasury workflows: reimbursement requests, approval controls, currency conversion, reconciliation and document generation.
 
-This case study demonstrates the same architectural claim as my research: that obligations enforced in the data model survive where procedural controls fail.
+## Current status
 
-**Pilot:** an overseas volunteer committee (7 troops, ~10 adult users) running a
-full fiscal year on the system. **Stack:** Next.js (App Router), TypeScript
-strict, Supabase (PostgreSQL + RLS + Storage), Vercel, Vitest + Playwright.
+This is a public engineering case study, not evidence of a completed full-year web-platform pilot. Operational spreadsheet records informed the requirements. The earlier Next.js / Supabase / Vercel development repository was retired on 1 November 2026; current engineering work targets a Google Workspace operating system.
 
-> This is a public case study. All screenshots use fictional sample data. The
-> production repository is private; this repo documents the engineering process
-> and architecture.
-
-## Why it exists
-
-Volunteer treasurers run real money on spreadsheets, manual currency math, and
-paper forms. A single fiscal year at the pilot site surfaced every classic
-failure: a check that cleared at a different amount than the ledger, a check
-that never appeared on any statement, and a year-end close blocked on
-reconciliation gaps. The platform turns those failure classes into database
-constraints and automated flags.
+The successor's available engineering record still lists implementation and acceptance work as open. A completed end-to-end reimbursement, deployment acceptance and a full-year pilot have not been verified in the reviewed records. Operational workbook history must not be presented as acceptance evidence for the retired web platform or the successor application.
 
 ## Engineering approach
 
-Built as an integrated systems/software engineering lifecycle with full
-traceability: Business Need → Stakeholder Requirement → System Requirement →
-Software Requirement → Design Component → Source Code → Test Case → Acceptance
-Evidence. Baselined Project Plan and Design documents, change records
-(CR-001…), a living risk register, and a decision log (AD-01…).
+The documented traceability approach links business need, stakeholder and system requirements, software requirements, design, source, tests and acceptance evidence. Plans, architecture, change records and verification criteria describe the intended system; they do not establish that every control has been implemented or passed.
 
-Highlights:
+The earlier web-platform design proposed:
 
-- **Controls in the database, not the UI.** Five invariants enforced by
-  triggers: no check without a recorded approval; approved records immutable
-  (corrections are contra entries); voids require documentation; FX fields
-  frozen at approval; reconciliation cannot close over unmatched lines.
-- **Row-level security as the authorization model** — tenant → role → troop
-  scoping on every table, verified by a CI negative-access suite (cross-troop
-  reads, cross-tenant reads, and oversight-role write attempts must fail).
-- **Volunteer-favorable FX policy as data.** A pure `resolveRate` function
-  (weekend rule, market-holiday walk-back, configurable rate basis) with daily
-  ingestion, failure alerting, and per-line audit fields: original amount, rate,
-  rate date, source.
-- **Documents are generated views over the database.** The official voucher
-  PDF, the A–J year-end report, per-troop packets, and the audit package are
-  reproducible artifacts hashed against their input rows.
-- **Multi-tenancy and theming from day one.** Tenant-scoped schema and a
-  token-driven theme layer: neutral default theme publicly; partner branding
-  activates only as an authorized tenant theme with insignia as uploaded
-  licensed assets.
+- Database controls requiring approval before check entry, preserving approved records, documenting voids and exceptions, retaining FX evidence, and preventing unreconciled closure.
+- Tenant, role and troop access controls, with negative-access tests required for verification.
+- Deterministic volunteer-favorable KRW-to-USD conversion with weekend and holiday fallback and per-line provenance.
+- Reproducible voucher, reconciliation and year-end reporting outputs.
+- Configurable tenant data and licensed branding rather than hard-coded organizational identity.
 
-## Screenshots (fictional data, neutral theme)
+These are architecture requirements and verification targets. The current Google Workspace approach uses a different storage and control model; database-trigger and RLS claims from the former design must not be transferred to it.
 
-| | |
+## Illustrative screens
+
+The images below use fictional data and illustrate the proposed workflow. They are not proof of production deployment or acceptance.
+
+| Screen | Proposed workflow |
 |---|---|
-| ![Leader mobile](screenshots/p1_leader_mobile.png) | Mobile submission with live KRW→USD conversion — volunteers never do currency math |
-| ![Chair review](screenshots/p2_chair_review.png) | One-tap approval with per-line FX audit trail and balance impact |
-| ![Treasurer dashboard](screenshots/p3_treasurer_dash.png) | Book vs. cleared balances and automatic control flags |
-| ![Reconciliation](screenshots/p4_reconciliation.png) | Assist-first statement matcher; close blocked while lines are unmatched |
+| ![Leader mobile](screenshots/p1_leader_mobile.png) | Mobile reimbursement submission and FX evidence |
+| ![Chair review](screenshots/p2_chair_review.png) | Approval review and audit trail |
+| ![Treasurer dashboard](screenshots/p3_treasurer_dash.png) | Book and cleared balances with exception flags |
+| ![Reconciliation](screenshots/p4_reconciliation.png) | Statement matching and reconciliation controls |
 
-## Roadmap
+## Current direction
 
-Phase 1 (hardened spreadsheet bridge) → V1 pilot web app → V1.1 year-end
-module → V2 multi-tenant productization with a regional oversight console.
+The November 2026 successor plan focuses on a request form, receipt photos, deterministic currency conversion, Treasurer review, Chair approval, check-number entry and a signed PDF. Implementation, verification and operational acceptance must be recorded before describing those capabilities as shipped. The previous multi-tenant commercialization roadmap is historical context, not the current delivery commitment.
 
 ## Provenance
 
-Foundation patterns derive from SpendWise, a three-person capstone project
-(auth scaffold, CRUD-slice convention, RLS isolation test harness), reused with
-the written consent of the contributing co-author. All treasury-domain code is
-original work.
+Foundation patterns derive from **SpendWise**, the UMGC CMSC 495 capstone by **Leighton Tidwell, Jason Holmes and Eric Hill**. The earlier case study records consent for reuse; preserve the original attribution and applicable rights. Treasury-specific design and code contributions are distinct from the capstone baseline.
+
+No private operational records, real financial details or youth records are published here. This independent case study does not imply organizational endorsement.
 
 ---
-© Jason V. Holmes. Case-study text and images may not be reproduced without
-permission. Code snippets in this repository are MIT-licensed unless noted.
+© Jason V. Holmes. Case-study text and images may not be reproduced without permission. Code snippets in this repository are MIT-licensed unless noted.
